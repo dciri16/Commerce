@@ -1,0 +1,43 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% if listings %}
+    <div class="container">
+        {% for listing in listings %}
+        <div class="d-flex mb-4 align-items-start">
+        {% if listing.image %} 
+            <img src="{{ listing.image.url }}" alt="Watchlist image" style="max-width:300px; height:auto; padding: 15px">
+        {% endif %}  
+        <div class="d-flex flex-column">   
+            <a href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a>
+            <h4>{{ listing.title }}</h4>
+            <p><strong>Price:</strong> €{{ listing.bid | floatformat:2 }}</p>
+            {% if listing.category %}
+                <p><strong>Description:</strong> {{ listing.description }}</p>
+            {% endif %}
+            <p><strong>Listed by:</strong> {{ listing.owner }}</p>
+            {% if listing.category %}
+                <p><strong>Category:</strong> {{ listing.category }}</p>
+            {% endif %}
+            <form method="POST"  action="{% url 'remove_from_watchlist' %}">
+                {% csrf_token %}
+                <div class="col-4">
+                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                    <button type="submit" style="background-color:red" class="btn btn-primary">Remove</button>
+                </div>
+            </form>
+            </div>
+        </div>     
+    {% endfor %}
+{% endif %}
+
+
+{% if message %}
+    <div class="alert alert-info">
+        {{ message }}
+    </div>
+{% endif %}
+
+
+{% endblock %}

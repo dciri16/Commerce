@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Category: {{ category_name}} </h2>
+{% if listings %}
+    <div class="container">
+        {% for listing in listings %}
+        <div class="d-flex mb-4 align-items-start">
+        {% if listing.image %} 
+            <img src="{{ listing.image.url }}" alt="Watchlist image" style="max-width:300px; height:auto; padding: 15px">
+        {% endif %}  
+        <div class="d-flex flex-column">   
+            <a style="font-size:30px" href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a>
+            <p><strong>Price:</strong> €{{ listing.bid | floatformat:2 }}</p>
+            {% if listing.category %}
+                <p><strong>Description:</strong> {{ listing.description }}</p>
+            {% endif %}
+            <p><strong>Listed by:</strong> {{ listing.owner }}</p>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+{% endif %}
+
+{% endblock %}

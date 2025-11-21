@@ -1,0 +1,40 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+    {% if new_listing %}
+        Signed in as <strong>{{ user.username }}</strong>.
+    {% else %}
+        
+    {% endif %}
+
+    <div> 
+    {% if listings %}
+        {% for listing in listings %}
+        <div class="d-flex mb-4 align-items-start">
+        {% if listing.image %} 
+            <img src="{{ listing.image.url }}" alt="Index image" style="max-width:200px; height:auto; padding: 15px">
+        {% endif %}
+            <div class="d-flex flex-column">   
+            <a style="font-size:30px" href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a>
+            <p><strong>Price:</strong> €{{ listing.bid | floatformat:2 }}</p>
+            {% if listing.category %}
+                <p><strong>Description:</strong> {{ listing.description }}</p>
+            {% endif %}
+            <p><strong>Listed by:</strong> {{ listing.owner }}</p>
+            {% if listing.category %} 
+            <a style="font-size:18px" href="{% url 'category_details' listing.category  %}">Category: {{ listing.category }}</a>
+            {% endif %}
+        </div> 
+        </div>     
+    {% endfor %}
+
+
+    {% else %}
+        <p>No listing yet</p>
+    {% endif %}
+
+    </div> 
+        
+{% endblock %}

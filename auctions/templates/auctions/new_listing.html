@@ -1,0 +1,61 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Create a new listing</h2>
+
+    <div class="col-12">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'new_listing' %}">
+        {% csrf_token %}
+        <div class="row mb-3">
+            <label class="col-1">Title</label>
+            <div class="col-6">
+                <input class="form-control" autofocus="autofocus" placeholder="Title"  type="text" name="title">
+            </div>
+        </div> 
+        <div class="row mb-3">
+            <label class="col-1">Description</label>
+            <div class="col-6">
+                <textarea class="form-control" placeholder="Describe the item" rows="10" name="description"></textarea>
+            </div>
+        </div> 
+        <div class="row mb-3">
+            <label class="col-1">Price in $</label>
+            <div class="col-6">
+                <input class="form-control" placeholder="Price" type="number" name="bid" step="0.01">
+            </div>
+        </div> 
+        <div class="row mb-3">
+            <label class="col-1">Image</label>
+            <div class="col-6">
+                <input class="form-control" autofocus="autofocus" type="file" name="image" accept="image/*">
+            </div>
+        </div> 
+        <div class="row mb-3">
+            <label class="col-1">Category</label>
+            <select name="category" id="category">
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Toys">Toys</option>
+            <option value="House Items">House Items</option>
+            <option value="Others">Others</option>
+            </select>
+        </div> 
+    
+        <div>
+            <div class="col-7" style="text-align:right">
+                <input type="submit" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+    </div>
+{% if errors %}
+<div class="alert alert-danger">
+    <ul>
+        {% for error in errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}
