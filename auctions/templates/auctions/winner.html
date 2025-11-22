@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}    
+    
+    <h2>Congratulations {{ winner.username }}! You won this auction.</h2>
+
+    <div class="d-flex mb-4 align-items-start">
+       {% if listing.image %} 
+            <img src="{{ listing.image.url }}" alt="Listing image" style="max-width:200px; height:auto; padding:15px">
+        {% endif %}
+        <div class="d-flex flex-column">
+        {% if listing.category %}
+            <p><strong>Description:</strong> {{ listing.description }}</p>
+        {% endif %}
+        <p><strong>Listed by:</strong> {{ listing.owner }}</p>
+        {% if listing.category %}
+            <p><strong>Category:</strong> {{ listing.category }}</p>
+        {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

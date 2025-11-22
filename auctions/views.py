@@ -40,10 +40,10 @@ def close_auction(request, listing_id):
 def comment(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     if request.method == "POST":
-        comment = request.POST["comment"]
-        if comment:
+        comment_text = request.POST.get("comment")
+        if comment_text:
             Comment.objects.create(
-                comment = comment,
+                comment = comment_text,
                 user = request.user,
                 listing = listing
                 )
@@ -64,33 +64,55 @@ def index(request):
 @login_required
 def listing_detail(request, listing_id):
     if request.method == "POST":
-        bid = Decimal(request.POST["bid"])
+        bid_amount = Decimal(request.POST["bid"])
         listing = Listing.objects.get(pk=listing_id)
-        starting_bid = listing.bid
-        if bid <= starting_bid:
+        highest_bid = listing.bids.order_by("-amount").first()
+        if highest_bid:
+            current_bid = highest_bid.amount
+        else:
+            current_bid = listing.bid
+        if bid_amount <= current_bid:
             return render(request, "auctions/listing_detail.html", {
                 "listing": listing,
                 "comments": listing.comments.all(),
                 "message": "Bid lower than starting bid",
             })
-        else:
-            listing.bid = bid
-            listing.save()
-            return render(request, "auctions/listing_detail.html", {
-                "listing": listing,
-                "comments": listing.comments.all(),
-                "message": "Bid successfully updated!",
-            })
+        
+        Bid.objects.create(
+        listing=listing,
+        user=request.user,
+        amount=bid_amount
+        )
+    
+        listing.bid = bid_amount
+        listing.save()
+        return render(request, "auctions/listing_detail.html", {
+            "listing": listing,
+            "comments": listing.comments.all(),
+            "message": "Bid successfully updated!",
+        })
 
     else:
         try:
             listing = Listing.objects.get(pk=listing_id)
-            return render(request, "auctions/listing_detail.html", {
-                "listing": listing,
-                "comments": listing.comments.all()
-            })
+            
         except Listing.DoesNotExist:
             raise Http404("Listing not found")
+        
+        else:
+            if not listing.active:
+                winning_bid = Bid.objects.filter(listing=listing).order_by("-amount").first()
+                if winning_bid:
+                    winner = winning_bid.user
+                    if request.user == winner:
+                        # Automatically show winner page
+                        return HttpResponseRedirect(reverse("winner_auction", args=[listing_id]))
+
+            comments = listing.comments.all()            
+            return render(request, "auctions/listing_detail.html", {
+                "listing": listing,
+                "comments": listing.comments.all(),
+            })
 
     
 def login_view(request):
@@ -235,6 +257,12 @@ def winner_auction(request, listing_id):
             })
         winner = winning_bid.user
         if winner == request.user:
+            return render(request, "auctions/winner.html", {
+                "listing": listing,
+                "winner" : winner,
+            })
+        else:
             return render(request, "auctions/listing_detail.html", {
-            "message": "You are the winner of this auction"
-        })
+                "listing": listing,
+                "message" : "The auction is closed. You didnt win!"
+            })

@@ -10,13 +10,6 @@
     </div>
     {% endif %}
 
-    {% if not listing.active %}
-    <a href="{% url 'winner_auction' listing.id %}" class="btn btn-success">
-        You won the auction!        
-    </a>
-    {% endif %}
-    <br>
-
     <div class="d-flex mb-4 align-items-start">
        {% if listing.image %} 
             <img src="{{ listing.image.url }}" alt="Listing image" style="max-width:200px; height:auto; padding:15px">
@@ -80,11 +73,5 @@
         </div>
     {% endfor %}
     </div>
-
-{% if message %}
-    <div class="alert alert-info">
-        {{ message }}
-    </div>
-{% endif %}
 
 {% endblock %}

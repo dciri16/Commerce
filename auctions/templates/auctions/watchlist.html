@@ -2,6 +2,12 @@
 
 {% block body %}
 
+{% if message %}
+    <div class="alert alert-info">
+        {{ message }}
+    </div>
+{% endif %}
+
 {% if listings %}
     <div class="container">
         {% for listing in listings %}
@@ -31,12 +37,6 @@
     {% endfor %}
 {% endif %}
 
-
-{% if message %}
-    <div class="alert alert-info">
-        {{ message }}
-    </div>
-{% endif %}
 
 
 {% endblock %}
