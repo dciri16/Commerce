@@ -3,6 +3,20 @@
 {% block body %}
 
     <h2>Listing: {{ listing.title }} </h2>
+
+    {% if message %}
+    <div class="alert alert-info">
+        {{ message }}
+    </div>
+    {% endif %}
+
+    {% if not listing.active %}
+    <a href="{% url 'winner_auction' listing.id %}" class="btn btn-success">
+        You won the auction!        
+    </a>
+    {% endif %}
+    <br>
+
     <div class="d-flex mb-4 align-items-start">
        {% if listing.image %} 
             <img src="{{ listing.image.url }}" alt="Listing image" style="max-width:200px; height:auto; padding:15px">
@@ -15,28 +29,47 @@
         {% if listing.category %}
             <p><strong>Category:</strong> {{ listing.category }}</p>
         {% endif %}
-            <form method="POST"  action="{% url 'watchlist' %}">
+        {% if listing.active %}
+        {% if request.user == listing.owner%}
+        <form method="POST"  action="{% url 'close_auction' listing.id %}">
         {% csrf_token %}
-        <div>
-            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-            <button type="submit" class="btn btn-primary">Add to Watchlist</button>
-        </div>
-    </form>
-        </div>
+            <div>
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <button type="submit" class="btn btn-danger">Close Auction</button>
+            </div>
+        </form>
+        {% endif %}
+        <br>
+        <br>
+        {% endif %}
+        {% if listing.active %}
+        <form method="POST"  action="{% url 'watchlist' %}">
+        {% csrf_token %}
+            <div>
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+            </div>
+        </form>
+        {% endif %}
     </div>
+    </div>
+    {% if listing.active %}
     <h4 id="starting_bid">€ {{ listing.bid | floatformat:2 }}</h4>
     <form class="form" method="POST">
         {% csrf_token %}
         <input placeholder="Bid" type="number" name="bid" step="0.01" required>
         <button type="submit" class="btn btn-success">Place Bid</button>
     </form>
+    {% endif %}
     <br>
     <div class="col-6">
+    {% if listing.active %}
     <form method="POST"  action="{% url 'comment' listing.id %}">
         {% csrf_token %}
         <textarea class="form-control" placeholder="Add a Comment Here" type="text" name="comment"></textarea>
         <button type="submit" class="btn btn-success">Post</button>    
     </form>
+    {% endif %}
     </div>
 
     <div class="col-6">

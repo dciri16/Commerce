@@ -23,6 +23,7 @@ class Listing(models.Model):
     image = models.ImageField(upload_to='listing_images/', blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings", null=True, blank=True)
     category = models.CharField(max_length = 64)
+    active = models.BooleanField(default=True)
 
 
 

@@ -25,6 +25,18 @@ def category_details(request, category_name):
 
 
 @login_required
+def close_auction(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    if request.method == "POST":
+        listing.active = False
+        listing.save()
+    
+    return HttpResponseRedirect(
+            reverse("listing_detail", args=[listing_id])
+        )
+
+
+@login_required
 def comment(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     if request.method == "POST":
@@ -210,3 +222,19 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "listings": listings,
     })
+
+@login_required
+def winner_auction(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    if listing.active == False:
+        winning_bid = Bid.objects.filter(listing=listing).order_by("-amount").first()
+        if winning_bid is None:
+            return render(request, "auctions/listing_detail.html", {
+                "listing": listing,
+                "message": "Auction ended with no bids."
+            })
+        winner = winning_bid.user
+        if winner == request.user:
+            return render(request, "auctions/listing_detail.html", {
+            "message": "You are the winner of this auction"
+        })
